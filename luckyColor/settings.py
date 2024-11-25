@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-5vgl2iv+)&ja1va4=j71ah^+8bw!d8fs^9202+_xhl+*5a7q6(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'lucky.aitiger.cc',  # 添加你的域名
+    'localhost',         # 本地开发用
+    '127.0.0.1',        # 本地开发用
+    '*',                # 允许所有主机（不建议在生产环境中使用）
+]
 
 
 # Application definition
