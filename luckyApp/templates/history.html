@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="history-container">
+    <div class="history-header">
+        <h1>双色球历史开奖数据</h1>
+        <form class="search-box" method="post" action="{% url 'luckyApp:history' %}">
+            {% csrf_token %}
+            <input type="text" id="searchInput" name="search" placeholder="搜索期号..." value="{{ search_query }}">
+            <button type="submit"><i class="fas fa-search"></i></button>
+            <button type="button" onclick="resetSearch()" class="reset-btn">
+                <i class="fas fa-undo"></i> 
+            </button>
+        </form>
+    </div>
+
+    <div class="lottery-cards">
+        {% for record in history_data %}
+        <div class="lottery-card">
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="issue-number">第{{ record.issue_number }}期</span>
+                </div>
+                <div class="ball-container">
+                    <span class="ball red-ball">{{ record.red_ball_1 }}</span>
+                    <span class="ball red-ball">{{ record.red_ball_2 }}</span>
+                    <span class="ball red-ball">{{ record.red_ball_3 }}</span>
+                    <span class="ball red-ball">{{ record.red_ball_4 }}</span>
+                    <span class="ball red-ball">{{ record.red_ball_5 }}</span>
+                    <span class="ball red-ball">{{ record.red_ball_6 }}</span>
+                    <span class="ball blue-ball">{{ record.blue_ball }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if history_data.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" class="page-link">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ history_data.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-link">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% endif %}
+
+        <span class="current-page">
+            {{ history_data.number }} / {{ history_data.paginator.num_pages }}
+        </span>
+
+        {% if history_data.has_next %}
+            <a href="?page={{ history_data.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-link">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ history_data.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" class="page-link">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .history-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        max-width: 100%;
+    }
+
+    .history-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .history-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+
+    .search-box {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        max-width: 500px;
+    }
+
+    .search-box input {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .search-box button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .search-box button[type="submit"] {
+        background: #3498db;
+    }
+
+    .reset-btn {
+        background: #95a5a6 !important;
+    }
+
+    .reset-btn:hover {
+        background: #7f8c8d !important;
+    }
+
+    .lottery-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .lottery-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 0.8rem 1.2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        min-width: 0;
+        margin-bottom: 0.5rem;
+        overflow: visible;
+    }
+
+    .card-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        min-width: 0;
+        position: relative;
+    }
+
+    .card-header {
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+
+    .issue-number {
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .ball-container {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding: 0.2rem;
+        margin-right: 0.5rem;
+    }
+
+    .ball-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ball {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .separator {
+        display: none;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    .page-link {
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border-radius: 4px;
+        color: #2c3e50;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: #e9ecef;
+    }
+
+    .current-page {
+        color: #7f8c8d;
+    }
+
+    @media (max-width: 768px) {
+        .card-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-header {
+            margin-bottom: 0.5rem;
+            min-width: 100%;
+        }
+
+        .ball-container {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 0.3rem 0;
+        }
+
+        .ball {
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .card-header {
+            min-width: 100px;
+        }
+
+        .ball {
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .ball {
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            font-size: 0.75rem;
+        }
+
+        .card-header {
+            font-size: 0.9rem;
+        }
+
+        .lottery-card {
+            padding: 0.6rem 0.8rem;
+        }
+    }
+</style>
+
+<script>
+    function resetSearch() {
+        window.location.href = "{% url 'luckyApp:history' %}";
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.form.submit();
+        }
+    });
+</script>
+{% endblock %} 

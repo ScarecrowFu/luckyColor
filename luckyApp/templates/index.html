@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1>欢迎使用幸运色彩双色球预测系统</h1>
+    <p class="subtitle">智能预测，助您把握机会</p>
+</div>
+
+<div class="menu-list">
+    <div class="menu-item">
+        <div class="icon-wrapper">
+            <i class="fas fa-history"></i>
+        </div>
+        <h2>历史数据</h2>
+        <p>查看双色球历史开奖记录，掌握开奖走势</p>
+        <a href="{% url 'luckyApp:history' %}" class="menu-button">查看详情</a>
+    </div>
+    
+    <div class="menu-item">
+        <div class="icon-wrapper">
+            <i class="fas fa-random"></i>
+        </div>
+        <h2>随机选号</h2>
+        <p>智能随机生成双色球号码，为您带来好运</p>
+        <a href="{% url 'luckyApp:random' %}" class="menu-button">立即选号</a>
+    </div>
+    
+    <div class="menu-item">
+        <div class="icon-wrapper">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <h2>号码预测</h2>
+        <p>基于历史数据的智能预测，提供参考建议</p>
+        <a href="{% url 'luckyApp:predict' %}" class="menu-button">查看预测</a>
+    </div>
+</div>
+
+<style>
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .welcome-section h1 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        color: #7f8c8d;
+        font-size: 1.2rem;
+    }
+
+    .menu-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .menu-item {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(145deg, #3498db, #2980b9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-wrapper i {
+        font-size: 24px;
+        color: white;
+    }
+
+    .menu-item h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .menu-item p {
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+        min-height: 48px;
+    }
+
+    .menu-button {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: linear-gradient(145deg, #3498db, #2980b9);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .menu-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section h1 {
+            font-size: 2rem;
+        }
+        
+        .menu-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %} 

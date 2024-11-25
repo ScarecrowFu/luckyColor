@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="predict-container">
+    <div class="predict-header">
+        <h1>智能预测</h1>
+        <p class="subtitle">基于历史数据分析，为您推荐可能的号码组合</p>
+    </div>
+
+    <div class="predict-options">
+        <button class="predict-btn" onclick="getPrediction('frequency')">
+            <i class="fas fa-chart-bar"></i>
+            频率分析预测
+        </button>
+        <button class="predict-btn" onclick="getPrediction('pattern')">
+            <i class="fas fa-brain"></i>
+            规律分析预测
+        </button>
+        <button class="predict-btn" onclick="getPrediction('smart')">
+            <i class="fas fa-robot"></i>
+            智能算法预测
+        </button>
+    </div>
+
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>正在分析历史数据...</span>
+    </div>
+
+    <div class="prediction-results" id="predictionResults">
+        <div class="result-header">
+            <h2>预测结果</h2>
+            <span class="result-time" id="predictTime"></span>
+        </div>
+        
+        <div class="number-groups" id="numberGroups">
+            <!-- 预测结果将通过JavaScript动态添加 -->
+        </div>
+    </div>
+</div>
+
+<style>
+    .predict-container {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .predict-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .predict-header h1 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+
+    .predict-options {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .predict-btn {
+        background: linear-gradient(145deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .predict-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .predict-btn i {
+        font-size: 1.2rem;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        margin: 2rem 0;
+        color: #3498db;
+        font-size: 1.2rem;
+    }
+
+    .loading-spinner i {
+        margin-right: 0.5rem;
+    }
+
+    .prediction-results {
+        margin-top: 2rem;
+        display: none;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f2f5;
+    }
+
+    .result-time {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    .number-groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .number-group {
+        background: #f8f9fa;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .group-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .group-title {
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .number-display {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding: 0.2rem;
+        margin-right: 0.5rem;
+    }
+
+    .number-display::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ball {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .predict-container {
+            padding: 1rem;
+        }
+
+        .predict-options {
+            flex-direction: column;
+        }
+
+        .predict-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .number-display {
+            justify-content: flex-start;
+        }
+
+        .ball {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 0.9rem;
+        }
+
+        .number-groups {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    function getPrediction(type) {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const predictionResults = document.getElementById('predictionResults');
+        const numberGroups = document.getElementById('numberGroups');
+        const predictTime = document.getElementById('predictTime');
+
+        // 显示加载动画
+        loadingSpinner.style.display = 'block';
+        predictionResults.style.display = 'none';
+        numberGroups.innerHTML = '';
+
+        // 发送预测请求
+        fetch(`/predict/?type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+                // 更新预测时间
+                predictTime.textContent = new Date().toLocaleString();
+                
+                // 添加预测结果
+                data.predictions.forEach((group, index) => {
+                    const groupElement = document.createElement('div');
+                    groupElement.className = 'number-group';
+                    
+                    groupElement.innerHTML = `
+                        <div class="group-header">
+                            <span class="group-title">组合 ${index + 1}</span>
+                        </div>
+                        <div class="number-display">
+                            ${group.red_balls.map(num => 
+                                `<span class="ball red-ball">${num}</span>`
+                            ).join('')}
+                            <span class="ball blue-ball">${group.blue_ball}</span>
+                        </div>
+                    `;
+                    
+                    numberGroups.appendChild(groupElement);
+                });
+
+                // 显示结果区域
+                loadingSpinner.style.display = 'none';
+                predictionResults.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('预测请求失败:', error);
+                loadingSpinner.style.display = 'none';
+                alert('预测失败，请稍后重试');
+            });
+    }
+
+    // 页面加载完成后自动触发频率分析预测
+    document.addEventListener('DOMContentLoaded', function() {
+        getPrediction('frequency');
+    });
+</script>
+{% endblock %} 
