@@ -168,6 +168,82 @@
                 width: 98%;
             }
         }
+
+        .side-images {
+            display: none;  /* 默认隐藏侧边图片 */
+        }
+
+        .bottom-image {
+            display: block;  /* 默认显示底部图片 */
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .bottom-image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (min-width: 1200px) {  /* PC端样式 */
+            .side-images {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;  /* 防止图片阻挡页面交互 */
+                z-index: 999;
+            }
+
+            .side-image {
+                position: absolute;  /* 改为absolute定位 */
+                width: 200px;
+            }
+
+            .side-image img {
+                width: 100%;
+                height: auto;
+            }
+
+            .side-image.left {
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .side-image.right {
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .bottom-image {
+                display: none;  /* PC端隐藏底部图片 */
+            }
+
+            /* 确保内容不被遮挡 */
+            .container {
+                margin: 80px auto 0;
+                max-width: calc(100% - 500px);  /* 留出两侧空间 */
+            }
+        }
+
+        @media (max-width: 1199px) {  /* 移动端样式 */
+            .side-images {
+                display: none;  /* 隐藏侧边图片 */
+            }
+
+            .bottom-image {
+                display: block;  /* 显示底部图片 */
+            }
+
+            .container {
+                margin: 80px auto 0;
+                width: 95%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -191,8 +267,19 @@
         {% block content %}
         {% endblock %}
     </div>
-    <div class="footer">
-        <p>© 2024 幸运色彩 - 双色球预测系统</p>
+ 
+    <!-- 在页面底部添加图片 -->
+    <div class="side-images">
+        <div class="side-image left">
+            <img src="https://pick.aitiger.cc/media/check2.png" alt="双色球验证码">
+        </div>
+        <div class="side-image right">
+            <img src="https://pick.aitiger.cc/media/check2.png" alt="双色球验证码">
+        </div>
+    </div>
+
+    <div class="bottom-image">
+        <img src="https://pick.aitiger.cc/media/check2.png" alt="双色球验证码">
     </div>
 
     <script>
